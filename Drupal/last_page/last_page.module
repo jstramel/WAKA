@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * Implements hook_user().
+ */
+
+function last_page_user($op, &$edit, &$account, $category = NULL) {
+  $uid = $account->uid;
+  if ($op == 'login') {
+    // query the db and find the last_page value for the uid. Only one value expected.
+    $result = db_result(db_query("SELECT last_page FROM {users} WHERE uid=%d", $uid));
+    // Redirect the user to the last page they were on
+    if ($result != '') {
+      unset($_REQUEST['destination'], $_REQUEST['edit']['destination']);
+      drupal_goto($result);
+    }
+  }
+  if ($op == 'logout') {
+    // write to the last_page field in the users table
+    $last_page = referer_uri();
+    $data = array(
+      'uid' => $uid,
+      'last_page' => $last_page
+    );
+    drupal_write_record('users', $data, 'uid');
+  }
+}

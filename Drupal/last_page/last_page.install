@@ -1,0 +1,45 @@
+<?php
+/**
+ * @file
+ * Install, update, and uninstall functions for the Last Page module.
+ */
+
+/**
+ * Implements hook_schema_alter().
+ */
+function last_page_schema_alter(&$schema) {
+  // Add field to existing schema.
+  $schema['users']['fields']['last_page'] = array(
+    'type' => 'varchar',
+    'length' => '255',
+    'not null' => TRUE,
+    'default' => '',
+    'description' => t('Last page user visited before logout'),
+  );
+}
+
+/**
+ * Implements hook_install().
+ */
+function last_page_install() {
+  // Add last_page field to user record
+  $ret = array();
+  $new_schema = array();
+  last_page_schema_alter($new_schema);
+  foreach ($new_schema['users']['fields'] as $name => $spec) {
+    db_add_field($ret, 'users', $name, $spec);
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function last_page_uninstall() {
+  // Remove last_page field from user record
+  $ret = array();
+  $new_schema = array();
+  last_page_schema_alter($new_schema);
+  foreach ($new_schema['users']['fields'] as $name => $spec) {
+    db_drop_field($ret, 'users', $name);
+  }
+}

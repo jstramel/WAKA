@@ -1,0 +1,4 @@
+name = Last Page
+description = Log the last page visited before logout, and return on login
+package = Other
+core = 6.x
